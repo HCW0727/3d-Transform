@@ -2,7 +2,7 @@ import numpy as np
 import math
 #####################################
 
-scales = [0 , 0.01 , 0.03, 0.02 , 0.01 , 0.005]
+scales = [0.05 , 0.1 , 0.3, 0.2 , 0.1 , 0.05]
 
 #####################################
 
@@ -15,7 +15,6 @@ length = len(lines)
 idx = length
 
 vertex = []
-polygon = []
 
 Normals = [[]for _ in range(length)]
 vNormals = []
@@ -26,7 +25,6 @@ def AddVertex(arr):
         
 def AddPolygon(arr):
     temp = [arr[1],arr[2],arr[3]]
-    polygon.append(temp)
     
 def GetNormals(arr):
     v1 = vertex[int(arr[1])-1]
@@ -37,7 +35,6 @@ def GetNormals(arr):
     vc = np.array([v3[0]-v1[0],v3[1]-v1[1],v3[2]-v1[2]])
     
     res = np.cross(va,vc)
-    lres = [0,0,0]
     l = math.sqrt(res[0]*res[0] + res[1]*res[1] + res[2]*res[2])    
     
     if l < 1.0e-30:
@@ -49,7 +46,6 @@ def GetNormals(arr):
         res[0] = res[0]/l
         res[1] = res[1]/l
         res[2] = res[2]/l
-    
     return res
 
 def AddNormals(arr,res):
@@ -65,7 +61,7 @@ def GetvNormals():
         zsum = 0
         for a in Normals[b]:
             c = len(Normals[b])
-            
+            # print(a)
             xsum += a[0]
             ysum += a[1]
             zsum += a[2]
@@ -88,7 +84,6 @@ for x in range(len(lines)):
         AddVertex(line)
     elif line[0] == 'f':
         idx = min(idx,x)
-        AddPolygon(line)
         AddNormals(line,GetNormals(line))
         
 GetvNormals()        
@@ -109,7 +104,7 @@ b_h = [0] * 6
 for b in range(6):
     border.append(round(miny - pose_border[b] * img_length,4))
 
-
+print(border)
 f2 = open("changed.obj","w")
 
 sep = " "
@@ -118,22 +113,13 @@ for x in range(idx):
     line = lines[x].split()
     
     yval = float(line[2])
+    # print(yval)
     
-    if yval >= border[0]:
-        scale = scales[0]
-        
-    else:
-        scale = 0
-        for x in range(5):
-            b_l[x+1] = border[x] - border[x+1]
-            b_h[x+1] = abs(yval - border[x+1])
-            
-            if b_l[x+1] < b_h[x+1]:
-                # print(b_l[x+1],b_h[x+1])
-                continue
-            
-            scale += (b_l[x+1] - b_h[x+1]) / b_l[x+1] * scales[x+1]
-                # print('hello',scale)
+    scale = 0
+    for x in range(5):
+        l = border[x]-border[x+1] 
+        if border[x+1] <= yval < border[x]:
+            scale = (yval-border[x])/l*scales[x+1] + (border[x+1]-yval)/l*scales[x]
     
     # print(scale)
     f2.writelines(str(round(float(line[1]) + vNormals[x][0]*scale,8)) + sep)
@@ -144,11 +130,14 @@ for x in range(idx):
     f2.writelines(str(float(line[6])) + sep)
     f2.writelines('\n')
     
+    print(vNormals[x][0]*scale)
+    
 
 for x in range(idx,length):
     
     f2.writelines(lines[x])
 
 f2.close()
+
 
 print("Transformed!")
