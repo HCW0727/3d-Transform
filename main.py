@@ -8,7 +8,7 @@ scales = [0.003 , 0.009 , 0.03, 0.02 , 0.009 , 0.003]
 
 pose_border =  [0.1555, 0.2127, 0.4254, 0.4963, 0.607, 0.8259]
 
-f = open("result_model_img_256.obj","r")
+f = open("img.obj","r")
 lines = f.readlines()
 length = len(lines)
 
@@ -88,7 +88,7 @@ GetvNormals()
   
 f.close()
 
-miny = 1.0e-6
+miny = -1.0e+6
 maxy = 1.0e+6
 
 for v in vertex:
