@@ -2,7 +2,7 @@ import numpy as np
 import math
 #####################################
 
-scales = [0.01 , 0.01 , 0.1, 0.02 , 0.01 , 0.01]
+scales = [0.003 , 0.009 , 0.03, 0.02 , 0.009 , 0.003]
 
 #####################################
 
@@ -60,7 +60,6 @@ def GetvNormals():
         zsum = 0
         for a in Normals[b]:
             c = len(Normals[b])
-            # print(a)
             xsum += a[0]
             ysum += a[1]
             zsum += a[2]
@@ -86,8 +85,6 @@ for x in range(len(lines)):
         
 GetvNormals()      
 
-print(len(vNormals))
-print(vNormals[idx-1])
   
 f.close()
 
